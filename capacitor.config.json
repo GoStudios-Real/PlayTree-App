@@ -1,0 +1,12 @@
+{
+  "appId": "com.gostudios.playtree",
+  "appName": "PlayTree",
+  "webDir": "dist",
+  "backgroundColor": "#05121a",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
