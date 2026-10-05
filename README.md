@@ -51,6 +51,19 @@ npm run dev        # http://localhost:5180
 npm run build      # production build → dist/
 ```
 
+## Tests
+
+```bash
+npx playwright install chromium   # first run only
+npm run test:e2e                  # builds dist/ then runs tests/e2e.cjs
+```
+
+36 end-to-end checks covering the gate → home flow, claim/redeem, hero game
+canvas, studio editor publish, store purchases, locker, friends/chat, battle
+bus, party, persistence across reload, settings, and the mobile bottom-nav
+layout. Screenshots land in `tests/results/`. Exits non-zero on any failure or
+console/page error.
+
 ## Build the apps
 
 ### Android (APK)
