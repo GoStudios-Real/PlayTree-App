@@ -1,6 +1,7 @@
 node_modules/
 dist/
 release/
+distrib/
 android/app/build/
 android/build/
 android/.gradle/
