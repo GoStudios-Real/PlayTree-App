@@ -213,6 +213,7 @@ button, input, textarea, select { font-family: inherit; color: inherit; }
 .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .row { display: flex; gap: 12px; align-items: center; }
 .row.between { justify-content: space-between; }
 .row.wrap { flex-wrap: wrap; }
@@ -336,6 +337,7 @@ button, input, textarea, select { font-family: inherit; color: inherit; }
 @media (max-width: 900px) {
   .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) {
   :root { --rail: 0px; }
@@ -346,7 +348,7 @@ button, input, textarea, select { font-family: inherit; color: inherit; }
   .topnav-links { display: none; }
   .banner { height: 92px; padding: 0 16px; }
   .banner h1 { font-size: 1.3rem; }
-  .cols-2, .cols-3, .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols-2, .cols-3, .cols-4, .cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .back-btn { left: 14px; bottom: 84px; }
   .bottom-nav {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 70;
@@ -359,5 +361,5 @@ button, input, textarea, select { font-family: inherit; color: inherit; }
   .featured-title { font-size: 1.9rem; }
 }
 @media (max-width: 420px) {
-  .cols-2, .cols-3, .cols-4 { grid-template-columns: minmax(0, 1fr); }
+  .cols-2, .cols-3, .cols-4, .cols-5 { grid-template-columns: minmax(0, 1fr); }
 }

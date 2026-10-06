@@ -96,6 +96,43 @@ const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, f
     check('rail: all 12 sections navigate', ok === railRoutes.length, fails.join(','));
   });
 
+  // 4b. Base44 parity: player profile + group detail pages
+  await step('player profile page', async () => {
+    await page.goto('http://localhost:5201/#/leaderboard', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+    await page.locator('.list-row').first().click();
+    await page.waitForFunction(() => location.hash.startsWith('#/player/'), null, { timeout: 4000 }).catch(() => {});
+    const hash = await page.evaluate(() => location.hash);
+    check('leaderboard row -> player page', hash.startsWith('#/player/'), hash);
+    check('player card renders', !!(await page.getByText('PLAYER CARD').first().isVisible().catch(() => false)));
+    check('player profile resolves (not 404)', (await page.getByText('PLAYER NOT FOUND').count()) === 0);
+    await page.goto('http://localhost:5201/#/player/FrostPhantom53', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(400);
+    check('other player shows add/report actions', (await page.getByText('ADD FRIEND').count()) > 0 && (await page.getByText('REPORT').count()) > 0);
+    await page.goto('http://localhost:5201/#/player/DefinitelyNotAPlayer404', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(400);
+    check('unknown player -> PLAYER NOT FOUND', (await page.getByText('PLAYER NOT FOUND').count()) > 0);
+  });
+
+  await step('group detail page', async () => {
+    await page.goto('http://localhost:5201/#/groups', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+    await page.locator('.panel', { hasText: 'MEMBERS' }).first().click();
+    await page.waitForFunction(() => /^#\/groups\/[^/]+$/.test(location.hash), null, { timeout: 4000 }).catch(() => {});
+    const hash = await page.evaluate(() => location.hash);
+    check('group card -> group page', /^#\/groups\/[^/]+$/.test(hash), hash);
+    check('group members list renders', (await page.getByText('MEMBERS ·', { exact: false }).count()) > 0);
+    const owner = page.locator('.mono-label', { hasText: 'OWNER:' }).locator('span').first();
+    if (await owner.count()) {
+      await owner.click();
+      await page.waitForFunction(() => location.hash.startsWith('#/player/'), null, { timeout: 4000 }).catch(() => {});
+      const h2 = await page.evaluate(() => location.hash);
+      check('group owner -> player page', h2.startsWith('#/player/'), h2);
+    } else {
+      check('group owner -> player page', false, 'owner link missing');
+    }
+  });
+
   // 5. games: search, install, play
   await step('games library', async () => {
     await page.goto('http://localhost:5201/#/games', { waitUntil: 'domcontentloaded' });

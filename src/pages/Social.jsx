@@ -258,6 +258,7 @@ export function Store() {
 /* =============== LEADERBOARD =============== */
 export function Leaderboard() {
   const { state } = useApp();
+  const nav = useNavigate();
   const [mode, setMode] = useState('SOLO');
   const [range, setRange] = useState('SEASON');
   const [sort, setSort] = useState('XP');
@@ -299,7 +300,7 @@ export function Leaderboard() {
               <div style={{ width: 58, height: 58, borderRadius: '50%', border: `2px solid ${col}`, display: 'grid', placeItems: 'center', margin: '8px auto', fontFamily: 'var(--font-head)', fontWeight: 700, color: col, boxShadow: place === 1 ? '0 0 26px rgba(255,214,10,0.5)' : 'none' }}>
                 {r.name.slice(0, 2).toUpperCase()}
               </div>
-              <div className="font-head" style={{ color: col, letterSpacing: 1.5, fontSize: '0.95rem' }}>{r.name.toUpperCase()}</div>
+              <div className="font-head" style={{ color: col, letterSpacing: 1.5, fontSize: '0.95rem', cursor: 'pointer' }} onClick={() => nav(`/player/${encodeURIComponent(r.name)}`)}>{r.name.toUpperCase()}</div>
               <div className="mono-label" style={{ marginTop: 3 }}>{r.xp} XP</div>
               <div style={{ height: place === 1 ? 74 : 54, background: 'rgba(255,255,255,0.035)', borderTop: `2px solid ${col}`, borderRadius: '4px 4px 0 0', marginTop: 10, display: 'grid', placeItems: 'center' }}>
                 <span style={{ fontSize: '1.1rem' }}>{r.icon}</span>
@@ -318,7 +319,7 @@ export function Leaderboard() {
 
       <div className="stack" style={{ gap: 8 }}>
         {rows.map((r, i) => (
-          <div key={r.name + i} className="list-row" style={{ borderColor: r.me ? 'var(--accent)' : undefined }}>
+          <div key={r.name + i} className="list-row" style={{ borderColor: r.me ? 'var(--accent)' : undefined, cursor: 'pointer' }} onClick={() => nav(`/player/${encodeURIComponent(r.name)}`)}>
             <div className="row" style={{ gap: 14 }}>
               <span className="mono-label" style={{ width: 20 }}>{i + 1}</span>
               <span style={{ width: 34, height: 34, borderRadius: '50%', background: r.av + '22', border: `1px solid ${r.av}`, display: 'grid', placeItems: 'center' }}>{r.icon}</span>
@@ -352,6 +353,7 @@ export function Leaderboard() {
 /* =============== FRIENDS =============== */
 export function Friends() {
   const { state, update, notify } = useApp();
+  const nav = useNavigate();
   const [q, setQ] = useState('');
   const [tab, setTab] = useState('ALL');
   const [qr, setQr] = useState(false);
@@ -403,7 +405,7 @@ export function Friends() {
                   {f.name.slice(0, 2).toUpperCase()}
                 </span>
                 <div>
-                  <div className="font-head" style={{ letterSpacing: 1 }}>{f.name}</div>
+                  <div className="font-head" style={{ letterSpacing: 1, cursor: 'pointer' }} onClick={() => nav(`/player/${encodeURIComponent(f.name)}`)}>{f.name}</div>
                   <div className="mono-label" style={{ color: f.online ? 'var(--accent)' : 'var(--muted-2)' }}>
                     {f.online ? '● ONLINE' : '○ OFFLINE'}
                   </div>
@@ -443,6 +445,7 @@ function QRModal({ onClose, name }) {
 /* =============== GROUPS =============== */
 export function Groups() {
   const { state, update, notify } = useApp();
+  const nav = useNavigate();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState('');
 
@@ -454,6 +457,17 @@ export function Groups() {
     if (state.points < 150) return notify('NEED 150 TREE-POINTS');
     update((s) => ({ points: s.points - 150, groups: [{ id: Date.now(), name: name.toUpperCase(), desc: 'Freshly planted group', members: 1, owner: state.player?.username || 'YOU', icon: '🛡️' }, ...s.groups] }));
     setName(''); setCreating(false); notify('GROUP CREATED');
+  };
+
+  const toggleJoin = (g) => {
+    const isOwner = (g.owner || '').toLowerCase() === (state.player?.username || '').toLowerCase();
+    if (isOwner) return notify('YOU OWN THIS GROUP');
+    const joined = (state.joinedGroups || []).some((id) => String(id) === String(g.id));
+    update((s) => {
+      const cur = s.joinedGroups || [];
+      return { joinedGroups: joined ? cur.filter((id) => String(id) !== String(g.id)) : [...cur, g.id] };
+    });
+    notify(joined ? 'LEFT ' + g.name : 'JOINED ' + g.name);
   };
 
   return (
@@ -475,18 +489,21 @@ export function Groups() {
       )}
 
       <div className="grid cols-3">
-        {groups.map((g) => (
-          <div key={g.id} className="panel">
-            <div className="row between">
-              <span style={{ fontSize: '1.8rem' }}>{g.icon}</span>
-              <span className="pill">{g.members} MEMBERS</span>
+        {groups.map((g) => {
+          const joined = (state.joinedGroups || []).some((id) => String(id) === String(g.id));
+          return (
+            <div key={g.id} className="panel" style={{ cursor: 'pointer' }} onClick={() => nav(`/groups/${g.id}`)}>
+              <div className="row between">
+                <span style={{ fontSize: '1.8rem' }}>{g.icon}</span>
+                <span className="pill">{g.members + (joined && (g.owner || '').toLowerCase() !== (state.player?.username || '').toLowerCase() ? 1 : 0)} MEMBERS</span>
+              </div>
+              <div className="font-head" style={{ fontSize: '1.15rem', letterSpacing: 2, marginTop: 12 }}>{g.name}</div>
+              <div className="muted" style={{ fontSize: '0.86rem', marginTop: 4 }}>{g.desc}</div>
+              <div className="mono-label" style={{ marginTop: 8 }}>OWNER: {g.owner}</div>
+              <button className="btn primary sm block" style={{ marginTop: 12 }} onClick={(e) => { e.stopPropagation(); toggleJoin(g); }}>{joined ? 'LEAVE' : 'JOIN'}</button>
             </div>
-            <div className="font-head" style={{ fontSize: '1.15rem', letterSpacing: 2, marginTop: 12 }}>{g.name}</div>
-            <div className="muted" style={{ fontSize: '0.86rem', marginTop: 4 }}>{g.desc}</div>
-            <div className="mono-label" style={{ marginTop: 8 }}>OWNER: {g.owner}</div>
-            <button className="btn primary sm block" style={{ marginTop: 12 }} onClick={() => notify('JOINED ' + g.name)}>JOIN</button>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </Page>
   );

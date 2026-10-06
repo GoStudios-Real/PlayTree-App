@@ -18,6 +18,7 @@ const initial = {
   badges: ['star-player'],
   friends: [],
   groups: [],
+  joinedGroups: [],
   videos: [
     { id: 'v-1', title: 'Nah uh', kind: 'SCREENSHOT', by: 'rhys.cotton20', caption: 'Hehe nah uh', icon: '😂', color: '#2b0b3a' },
   ],

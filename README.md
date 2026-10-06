@@ -15,20 +15,28 @@ PlayTree is a dark neon-themed gaming hub where you create an identity, play arc
 - **PlayTree Studio** — 2D level editor with brush/eraser/fill tools, Test Play, cover-art generator, and publishing to the library
 - **Locker & Store** — avatars, themes, and frames bought with Tree-Points
 - **Profile** — identity, stats, badges, continue-playing row
-- **Social** — friends, groups, chat, videos, and a global leaderboard
+- **Social** — friends, groups, chat, videos, public player profiles (`/player/:name`), group pages (`/groups/:id`), and a global leaderboard
 - **Reality / Collaborations** — seasonal events and brand collab drops
 - **Account & Safety** — settings, parental controls, moderation, redeem codes
 - **Offline-first** — everything persists to `localStorage`, no server required
 
 ## Screenshots
 
-| Games | Studio |
+| Home | Games |
 | --- | --- |
-| ![Games](docs/screenshots/games.png) | ![Studio](docs/screenshots/studio.png) |
+| ![Home](docs/screenshots/03-home.png) | ![Games](docs/screenshots/games.png) |
 
-| Profile | Mobile |
+| Player profile | Group page |
 | --- | --- |
-| ![Profile](docs/screenshots/profile.png) | ![Mobile](docs/screenshots/mobile-home.png) |
+| ![Player](docs/screenshots/player.png) | ![Group](docs/screenshots/group.png) |
+
+| Profile | Studio |
+| --- | --- |
+| ![Profile](docs/screenshots/profile.png) | ![Studio](docs/screenshots/studio.png) |
+
+| Store | Mobile |
+| --- | --- |
+| ![Store](docs/screenshots/store.png) | ![Mobile](docs/screenshots/mobile-home.png) |
 
 ## Download
 

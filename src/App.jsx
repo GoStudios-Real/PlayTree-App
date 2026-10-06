@@ -7,6 +7,7 @@ import { Games, Lobby, BattleBus } from './pages/Core.jsx';
 import { Profile, Locker, Store, Leaderboard, Friends, Groups, Videos } from './pages/Social.jsx';
 import { Studio } from './pages/Studio.jsx';
 import { Settings, Reality, Collaborations, Account, Parental, Support, Moderation, Redeem, Legal, Chat, NotFound } from './pages/Misc.jsx';
+import { PlayerProfile, GroupDetail } from './pages/Player.jsx';
 
 function Shell() {
   const { state, toast } = useApp();
@@ -31,6 +32,8 @@ function Shell() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/groups" element={<Groups />} />
+          <Route path="/groups/:groupId" element={<GroupDetail />} />
+          <Route path="/player/:username" element={<PlayerProfile />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="/settings" element={<Settings />} />

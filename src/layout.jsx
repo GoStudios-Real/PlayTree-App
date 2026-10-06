@@ -69,22 +69,22 @@ export function TopNav() {
   );
 }
 
-export function Banner({ page }) {
+export function Banner({ page, title, sub, tag }) {
   const b = BANNERS[page] || BANNERS.home;
   return (
     <div className="banner" style={{ background: `radial-gradient(ellipse at 78% 40%, ${b.c1}, transparent 62%), linear-gradient(120deg, ${b.c2}, ${b.c1})` }}>
       <div style={{ position: 'absolute', right: 40, top: -14, fontSize: 118, opacity: 0.16, transform: 'rotate(-8deg)' }}>{b.icon}</div>
       <div className="banner-inner">
-        <span className="banner-tag">{b.tag}</span>
-        <h1>{b.title}</h1>
-        <div className="sub">{b.sub}</div>
+        <span className="banner-tag">{tag || b.tag}</span>
+        <h1>{title || b.title}</h1>
+        <div className="sub">{sub || b.sub}</div>
       </div>
     </div>
   );
 }
 
-export function BrandBar({ page }) {
-  const label = (BANNERS[page] || BANNERS.home).title;
+export function BrandBar({ page, label: labelProp }) {
+  const label = labelProp || (BANNERS[page] || BANNERS.home).title;
   return (
     <div className="brandbar">
       <div className="left">
@@ -96,12 +96,12 @@ export function BrandBar({ page }) {
   );
 }
 
-export function Page({ page, children, bare }) {
+export function Page({ page, title, sub, tag, children, bare }) {
   const nav = useNavigate();
   return (
     <div className="page">
-      {!bare && <Banner page={page} />}
-      {!bare && <BrandBar page={page} />}
+      {!bare && <Banner page={page} title={title} sub={sub} tag={tag} />}
+      {!bare && <BrandBar page={page} label={title} />}
       {children}
       <div className="back-btn">
         <button className="btn ghost sm" onClick={() => nav(-1)}><Icon name="back" size={13} /> BACK</button>
