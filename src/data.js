@@ -73,11 +73,11 @@ export const BANNERS = {
   account: { tag: 'ACCESS', title: 'ACCOUNT', sub: 'SIGN IN · LINK YOUR PLATFORMS', c1: '#0b1c30', c2: '#040b14', icon: '🔐' },
   parental: { tag: 'PARENT ZONE', title: 'PARENTAL CONTROLS', sub: 'PIN · LIMITS · SAFETY', c1: '#2b1a05', c2: '#120a02', icon: '👨‍👩‍👧' },
   moderation: { tag: 'SAFETY', title: 'MODERATION', sub: 'GOAI · REPORTS · RULES', c1: '#2b0a0a', c2: '#120303', icon: '🛡️' },
-  support: { tag: 'HELP', title: 'SUPPORT', sub: 'TICKETS · ARTICLES · LIVE CHAT', c1: '#0a1f30', c2: '#030c14', icon: '🛟' },
+  support: { tag: 'HELP', title: 'SUPPORT', sub: 'TICKETS - ARTICLES - AI LOG', c1: '#0a1f30', c2: '#030c14', icon: '🛟' },
   redeem: { tag: 'REWARDS', title: 'REDEEM', sub: 'ENTER CODES · CLAIM LOOT', c1: '#2b2405', c2: '#120f02', icon: '🎁' },
   terms: { tag: 'LEGAL', title: 'TERMS OF SERVICE', sub: 'THE RULES OF THE TREEHOUSE', c1: '#0e141a', c2: '#05080b', icon: '📜' },
   privacy: { tag: 'LEGAL', title: 'PRIVACY POLICY', sub: 'HOW PLAYTREE HANDLES YOUR DATA', c1: '#0e141a', c2: '#05080b', icon: '🔒' },
-  chat: { tag: 'SOCIAL', title: 'LIVE CHAT', sub: 'SQUAD COMMS · GOAI FILTERED', c1: '#0a2a30', c2: '#031214', icon: '💬' },
+  chat: { tag: 'SOCIAL', title: 'AI BUILD LOG', sub: 'BASE44 CHAT ARCHIVE - READ ONLY', c1: '#0a2a30', c2: '#031214', icon: '💬' },
 };
 
 export const GENRES = ['ALL', 'ACTION', 'ADVENTURE', 'PUZZLE', 'SHOOTER', 'RACING', 'RPG', 'STRATEGY', 'SPORTS', 'HORROR'];

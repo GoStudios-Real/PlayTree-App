@@ -1,0 +1,15 @@
+{
+  "name": "PlayTree™",
+  "short_name": "PlayTree",
+  "description": "PlayTree™ by GoStudios — the interactive home of the PlayTree gaming universe. Copyright (c) 2026 GoStudios.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#03150d",
+  "theme_color": "#39ff14",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

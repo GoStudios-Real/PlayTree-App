@@ -6,6 +6,7 @@ import { useApp } from '../store.jsx';
 import {
   REALITY_MODES, REALITY_STEPS, COLLABS, PLATFORMS, HELP_ARTICLES, MOD_RULES, PROFILE_THEMES, BADGES, randomName,
 } from '../data.js';
+import { CHAT_ARCHIVE, CHAT_ARCHIVE_META } from '../data/chatArchive.js';
 
 /* =============== SETTINGS =============== */
 export function Settings() {
@@ -128,7 +129,7 @@ export function Settings() {
         </p>
         <div className="font-mono" style={{ color: 'var(--accent)', fontSize: '0.8rem', margin: '10px 0 14px' }}>GOSTUDIOSCORP@OUTLOOK.COM</div>
         <div className="grid cols-3">
-          {[['Live Chat', 'ASK OUR AI ASSISTANT', 'mic'], ['Submit a Ticket', 'BUGS, ACCOUNT OR SAFETY', 'flag'], ['Track a Ticket', 'ENTER YOUR GS- CODE', 'hash']].map(([t, d, ic]) => (
+          {[['AI Build Log', 'READ THE BASE44 AI CHAT ARCHIVE', 'mic'], ['Submit a Ticket', 'BUGS, ACCOUNT OR SAFETY', 'flag'], ['Track a Ticket', 'ENTER YOUR GS- CODE', 'hash']].map(([t, d, ic]) => (
             <button key={t} className="panel center" style={{ cursor: 'pointer' }} onClick={() => nav('/support')}>
               <Icon name={ic} size={20} color="var(--accent)" />
               <div className="font-head" style={{ marginTop: 8, letterSpacing: 1 }}>{t}</div>
@@ -466,6 +467,7 @@ export function Parental() {
 
 /* =============== SUPPORT =============== */
 export function Support() {
+  const nav = useNavigate();
   const { state, update, notify } = useApp();
   const [tab, setTab] = useState('OPEN');
   const [q, setQ] = useState('');
@@ -526,8 +528,11 @@ export function Support() {
         <div className="muted" style={{ fontSize: '0.88rem', lineHeight: 1.7, marginBottom: 14 }}>
           The official PlayTree help desk — chat with the assistant, open a ticket with the human team, or browse the knowledge base.
         </div>
+        <a className="btn primary block" href="https://go-studio-help.base44.app" target="_blank" rel="noreferrer" style={{ textAlign: 'center', marginBottom: 14 }}>
+          OPEN GOSTUDIOS SUPPORT DASHBOARD ↗
+        </a>
         <div className="grid cols-3">
-          {[['Live Chat', 'ASK OUR AI ASSISTANT — IT READS THE HELP CENTER AND CAN FILE TICKETS', 'mic', () => notify('GOAI ASSISTANT ONLINE')],
+          {[['AI Build Log', 'READ THE FULL BASE44 AI CHAT ARCHIVE INSIDE PLAYTREE', 'mic', () => nav('/chat')],
             ['Submit a Ticket', 'BUGS, ACCOUNT ISSUES OR SAFETY REPORTS — THE HUMAN TEAM', 'flag', () => setShowForm(true)],
             ['Track a Ticket', 'ENTER YOUR GS- CODE TO SEE WHERE YOUR REQUEST STANDS', 'hash', () => notify('ENTER A GS- CODE BELOW')]].map(([t, d, ic, fn]) => (
             <button key={t} className="panel center" style={{ cursor: 'pointer' }} onClick={fn}>
@@ -660,7 +665,7 @@ export function Redeem() {
   const { state, update, notify, addPoints } = useApp();
   const [code, setCode] = useState('');
   const CODES = {
-    GOCONSOLE100: 100, PLAYTREE2026: 200, SEASON2: 350, TREEHUGGER: 150, GOSTUDIOS: 250, BIRTHDAY: 500,
+    GOCONSOLE100: 100, PLAYTREE2026: 200, SEASON2: 350, TREEHUGGER: 150, GOSTUDIOS: 250, BIRTHDAY: 500, PLAYTREE400: 400,
   };
 
   const redeem = () => {
@@ -742,58 +747,48 @@ export function Legal({ kind }) {
   );
 }
 
-/* =============== CHAT =============== */
+/* =============== CHAT — AI BUILD LOG (live chat removed) =============== */
 export function Chat() {
-  const { state, notify } = useApp();
-  const [msgs, setMsgs] = useState([
-    { id: 1, from: 'GoAI', bot: true, text: 'GoAI is monitoring chat. Keep it kind and safe.' },
-    { id: 2, from: 'PlayTree', text: 'Anyone want to squad up?' },
-    { id: 3, from: 'FrostPhantom53', text: 'dropping at crystal canopy in 2' },
-  ]);
-  const [text, setText] = useState('');
-  const BAD = ['bad', 'stupid', 'hate', 'idiot'];
-
-  const send = () => {
-    const t = text.trim();
-    if (!t) return;
-    if (BAD.some((w) => t.toLowerCase().includes(w))) return notify('BLOCKED BY GOAI CHAT FILTER');
-    setMsgs((m) => [...m, { id: Date.now(), from: state.player?.username || 'YOU', text: t, me: true }]);
-    setText('');
-    setTimeout(() => setMsgs((m) => [...m, { id: Date.now() + 1, from: 'GoAI', bot: true, text: 'Message relayed to your squad. 🌳' }]), 700);
-  };
+  const { state } = useApp();
 
   return (
     <Page page="chat">
       <div className="panel glow" style={{ maxWidth: 760, margin: '10px auto', display: 'flex', flexDirection: 'column', height: '62vh' }}>
         <div className="row between" style={{ borderBottom: '1px solid var(--line-soft)', paddingBottom: 12 }}>
           <div className="row" style={{ gap: 10 }}>
-            <span style={{ fontSize: '1.4rem' }}>💬</span>
+            <span style={{ fontSize: '1.4rem' }}>🧠</span>
             <div>
-              <div className="font-head" style={{ letterSpacing: 2 }}>SQUAD LIVE CHAT</div>
-              <div className="mono-label">GOAI FILTER · {msgs.length} MESSAGES</div>
+              <div className="font-head" style={{ letterSpacing: 2 }}>AI BUILD LOG</div>
+              <div className="mono-label">
+                {`BASE44 AI CHAT · ${CHAT_ARCHIVE_META.total} MESSAGES · ${CHAT_ARCHIVE_META.user} YOURS · ${CHAT_ARCHIVE_META.from}–${CHAT_ARCHIVE_META.to}`}
+              </div>
             </div>
           </div>
-          <span className="tag low">ONLINE</span>
+          <span className="tag low">ARCHIVE</span>
         </div>
 
         <div style={{ flex: 1, overflow: 'auto', padding: '14px 4px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {msgs.map((m) => (
-            <div key={m.id} style={{ alignSelf: m.me ? 'flex-end' : 'flex-start', maxWidth: '78%' }}>
-              <div className="mono-label" style={{ marginBottom: 3, textAlign: m.me ? 'right' : 'left', color: m.bot ? 'var(--cyan)' : 'var(--accent)' }}>
-                {m.from.toUpperCase()}{m.bot ? ' 🤖' : ''}
+          {CHAT_ARCHIVE.map((m, i) => {
+            const mine = m.role === 'user';
+            return (
+              <div key={i} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+                <div className="mono-label" style={{ marginBottom: 3, textAlign: mine ? 'right' : 'left', color: mine ? 'var(--accent)' : 'var(--cyan)' }}>
+                  {mine ? (state.player?.username || 'YOU').toUpperCase() : 'BASE44 AI'}
+                </div>
+                <div style={{ background: mine ? 'rgba(57,255,20,0.12)' : 'rgba(0,191,255,0.1)', border: '1px solid ' + (mine ? 'rgba(57,255,20,0.35)' : 'rgba(0,191,255,0.3)'), padding: '9px 13px', borderRadius: 10, fontSize: '0.93rem', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                  {m.text}
+                </div>
               </div>
-              <div style={{ background: m.me ? 'rgba(57,255,20,0.12)' : m.bot ? 'rgba(0,191,255,0.1)' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (m.me ? 'rgba(57,255,20,0.35)' : m.bot ? 'rgba(0,191,255,0.3)' : 'var(--line-soft)'), padding: '9px 13px', borderRadius: 10, fontSize: '0.93rem', lineHeight: 1.5 }}>
-                {m.text}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="row" style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 12 }}>
-          <input className="input" value={text} maxLength={180} placeholder="Type a message..." onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && send()} />
-          <button className="btn primary" onClick={send}><Icon name="send" size={13} /></button>
+        <div className="mono-label center" style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 12 }}>
+          ARCHIVE · READ-ONLY · {CHAT_ARCHIVE_META.total} MESSAGES IMPORTED FROM THE BASE44 AI CHAT
         </div>
-        <div className="mono-label center" style={{ marginTop: 8 }}>GOAI IS MONITORING CHAT.</div>
+        <div className="mono-label center" style={{ marginTop: 8 }}>
+          {CHAT_ARCHIVE_META.user} MESSAGES WRITTEN BY YOU · {CHAT_ARCHIVE_META.from} TO {CHAT_ARCHIVE_META.to}
+        </div>
       </div>
     </Page>
   );

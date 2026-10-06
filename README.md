@@ -16,8 +16,14 @@ PlayTree is a dark neon-themed gaming hub where you create an identity, play arc
 - **Locker & Store** — avatars, themes, and frames bought with Tree-Points
 - **Profile** — identity, stats, badges, continue-playing row
 - **Social** — friends, groups, chat, videos, public player profiles (`/player/:name`), group pages (`/groups/:id`), and a global leaderboard
+- **AI Build Log** — your complete Base44 builder AI chat archive imported via API (1,170 messages, 203 written by you) at `/chat` (live chat removed)
+- **Offline mode** — custom PlayTree "YOU'RE OFFLINE" screen with **ENTER OFFLINE MODE** when the network drops
+- **Loading screens** — spinning PlayTree logo every time you launch a game
+- **Storm ticker** — event countdown on home that stops at zero when the event goes live
+- **Welcome back** — home greeting with platform chips (Windows / Android / iOS / macOS / Linux / Browser)
+- **PWA install** — manifest + service worker + **ADD TO DESKTOP** button; redeem code `PLAYTREE400` = 400 Tree-Points
 - **Reality / Collaborations** — seasonal events and brand collab drops
-- **Account & Safety** — settings, parental controls, moderation, redeem codes
+- **Account & Safety** — settings, parental controls, moderation, redeem codes, and a one-click link to the GoStudios Support dashboard
 - **Offline-first** — everything persists to `localStorage`, no server required
 
 ## Screenshots
@@ -37,6 +43,10 @@ PlayTree is a dark neon-themed gaming hub where you create an identity, play arc
 | Store | Mobile |
 | --- | --- |
 | ![Store](docs/screenshots/store.png) | ![Mobile](docs/screenshots/mobile-home.png) |
+
+| AI Build Log (chat archive) | Leaderboard |
+| --- | --- |
+| ![Chat archive](docs/screenshots/chat.png) | ![Leaderboard](docs/screenshots/ranks.png) |
 
 ## Download
 

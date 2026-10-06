@@ -20,3 +20,23 @@ createRoot(document.getElementById('root')).render(
     </AppProvider>
   </React.StrictMode>
 );
+
+/* PWA: service worker + install prompt */
+if (typeof window !== 'undefined') {
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferred = e;
+    window.__ptInstallPending = true;
+    window.dispatchEvent(new Event('pt-install-ready'));
+  });
+  window.__ptInstall = async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred = null;
+    window.__ptInstallPending = false;
+  };
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  }
+}

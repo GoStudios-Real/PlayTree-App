@@ -363,3 +363,5 @@ button, input, textarea, select { font-family: inherit; color: inherit; }
 @media (max-width: 420px) {
   .cols-2, .cols-3, .cols-4, .cols-5 { grid-template-columns: minmax(0, 1fr); }
 }
+
+@keyframes pt-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

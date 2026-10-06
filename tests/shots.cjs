@@ -52,6 +52,11 @@ async function shot(page, hash, file) {
   await shot(desktop, '/leaderboard', 'ranks.png');
   await shot(desktop, '/player/GoStudios', 'player.png');
   await shot(desktop, '/groups/g1', 'group.png');
+  await desktop.goto(BASE + '/#/chat', { waitUntil: 'domcontentloaded' });
+  await desktop.waitForTimeout(800);
+  try { await desktop.getByRole('button', { name: 'ARCHIVE', exact: true }).click(); await desktop.waitForTimeout(900); } catch {}
+  await desktop.screenshot({ path: path.join(outDir, 'chat.png') });
+  console.log('shot chat.png');
   await desktop.close();
 
   const mobile = await browser.newPage({ viewport: { width: 393, height: 852 } });

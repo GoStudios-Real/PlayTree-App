@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Rail, TopNav, Stars } from './layout.jsx';
+import { TreeLogo } from './icons.jsx';
 import { useApp } from './store.jsx';
 import { Gate, Home } from './pages/Home.jsx';
 import { Games, Lobby, BattleBus } from './pages/Core.jsx';
@@ -57,9 +58,65 @@ function Shell() {
   );
 }
 
+/* custom PlayTree offline screen + offline mode entry (browser offline events) */
+function OfflineGate() {
+  const { notify } = useApp();
+  const [off, setOff] = useState(typeof navigator !== 'undefined' && !navigator.onLine);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    const on = () => { setOff(false); notify('BACK ONLINE — SYNCING'); };
+    const of = () => setOff(true);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', of);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', of); };
+  }, [notify]);
+
+  if (!off || entered) return null;
+  const retry = () => {
+    if (navigator.onLine) { setOff(false); notify('BACK ONLINE — SYNCING'); } else notify('STILL OFFLINE — NO NETWORK');
+  };
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 3200, background: 'radial-gradient(ellipse at center, #05210f, #010604)' }} className="center">
+      <div className="panel glow" style={{ maxWidth: 420, padding: 30, textAlign: 'center' }}>
+        <div style={{ animation: 'pt-spin 3s linear infinite', display: 'inline-block' }}><TreeLogo size={56} /></div>
+        <div className="font-head" style={{ fontSize: '1.5rem', letterSpacing: 4, marginTop: 16 }}>YOU'RE OFFLINE</div>
+        <div className="muted" style={{ marginTop: 10, lineHeight: 1.6, fontSize: '0.92rem' }}>
+          No network detected — but PlayTree still runs. Your progress, games and locker are saved on this device.
+        </div>
+        <button className="btn primary block" style={{ marginTop: 20, padding: 13 }} onClick={() => { setEntered(true); notify('OFFLINE MODE ACTIVE'); }}>
+          ENTER OFFLINE MODE
+        </button>
+        <button className="btn ghost block" style={{ marginTop: 10 }} onClick={retry}>RETRY CONNECTION</button>
+        <div className="mono-label center" style={{ marginTop: 14 }}>PLAYTREE OFFLINE — GOSTUDIOS 2026</div>
+      </div>
+    </div>
+  );
+}
+
+/* PWA install button (beforeinstallprompt) */
+function InstallButton() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const h = () => setReady(true);
+    window.addEventListener('pt-install-ready', h);
+    if (window.__ptInstallPending) setReady(true);
+    return () => window.removeEventListener('pt-install-ready', h);
+  }, []);
+  if (!ready) return null;
+  return (
+    <button className="btn primary" style={{ position: 'fixed', left: 16, bottom: 16, zIndex: 1500, boxShadow: '0 0 18px rgba(57,255,20,0.35)' }}
+      onClick={() => { if (window.__ptInstall) window.__ptInstall(); }}>
+      ⬇ ADD TO DESKTOP
+    </button>
+  );
+}
+
 export default function App() {
   return (
     <HashRouter>
+      <OfflineGate />
+      <InstallButton />
       <Shell />
     </HashRouter>
   );

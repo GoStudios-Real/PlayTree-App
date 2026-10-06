@@ -27,6 +27,14 @@ const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, f
   await new Promise((r) => server.listen(5201, r));
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.addInitScript(() => {
+    try {
+      Object.defineProperty(navigator, 'serviceWorker', {
+        value: { register: () => Promise.reject(new Error('disabled in tests')), getRegistrations: () => Promise.resolve([]), ready: Promise.resolve(null) },
+        configurable: true,
+      });
+    } catch {}
+  });
   page.setDefaultTimeout(8000);
   page.setDefaultNavigationTimeout(15000);
   const watchdog = setTimeout(() => { console.log('WATCHDOG: overall timeout, exiting'); process.exit(2); }, 360000);
@@ -131,6 +139,58 @@ const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, f
     } else {
       check('group owner -> player page', false, 'owner link missing');
     }
+  });
+
+  // 4c. AI build log archive (live chat removed)
+  await step('AI build log (live chat removed)', async () => {
+    await page.goto('http://localhost:5201/#/chat', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(700);
+    check('AI build log renders', (await page.getByText('AI BUILD LOG', { exact: false }).count()) > 0);
+    const liveGone = (await page.getByText('SQUAD LIVE CHAT', { exact: false }).count()) === 0
+      && (await page.locator('input[placeholder="Type a message..."]').count()) === 0;
+    check('live chat removed', liveGone);
+    check('archive counts shown (1170/203)', (await page.getByText('1170 MESSAGES', { exact: false }).count()) > 0 && (await page.getByText('203 YOURS', { exact: false }).count()) > 0);
+    const mine = await page.getByText('make this game offline', { exact: false }).count();
+    check('my chat writing present in archive', mine > 0, `matches=${mine}`);
+    check('archive is read-only', (await page.getByText('READ-ONLY', { exact: false }).count()) > 0);
+  });
+
+  // 4d. features requested in the Base44 chat
+  await step('base44 requested features', async () => {
+    await page.goto('http://localhost:5201/#/', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(800);
+    check('storm ticker countdown on home', (await page.getByText('STORM TICKER', { exact: false }).count()) > 0
+      && ((await page.getByText('EVENT STARTS IN', { exact: false }).count()) > 0 || (await page.getByText('LIVE NOW', { exact: false }).count()) > 0));
+    check('welcome back + platform chips', (await page.getByText('WELCOME BACK,', { exact: false }).count()) > 0
+      && (await page.getByText('BROWSER', { exact: false }).count()) > 0);
+    check('manifest linked', (await page.locator('link[rel="manifest"]').count()) > 0);
+    const swStatus = await page.evaluate(async () => { try { const r = await fetch('/sw.js'); return r.status; } catch { return 0; } });
+    check('service worker served', swStatus === 200, String(swStatus));
+    // spinning logo loading screen -> game opens
+    await page.getByRole('button', { name: 'PLAY', exact: true }).first().click();
+    await page.waitForTimeout(300);
+    const spinning = await page.getByText('SPINNING UP PLAYTREE', { exact: false }).first().isVisible().catch(() => false);
+    check('spinning logo loading screen', !!spinning);
+    await page.waitForTimeout(1600);
+    check('game opens after loading', (await page.locator('.overlay .modal').count()) > 0);
+    await page.locator('.modal-head .icon-btn').first().click().catch(() => {});
+    await page.waitForTimeout(400);
+    // custom offline screen + enter offline mode
+    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+    await page.waitForTimeout(400);
+    check('custom offline screen appears', (await page.getByText("YOU'RE OFFLINE", { exact: false }).count()) > 0);
+    await page.getByText('ENTER OFFLINE MODE').first().click();
+    await page.waitForTimeout(300);
+    check('enters offline mode', (await page.getByText('ENTER OFFLINE MODE', { exact: false }).count()) === 0);
+    check('offline mode toast', !!(await waitToast('OFFLINE MODE ACTIVE')));
+    await page.evaluate(() => window.dispatchEvent(new Event('online')));
+    await page.waitForTimeout(300);
+    check('back online toast', !!(await waitToast('BACK ONLINE')));
+    // support dashboard link
+    await page.goto('http://localhost:5201/#/support', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(600);
+    check('go studios support dashboard link', (await page.locator('a[href="https://go-studio-help.base44.app"]').count()) > 0);
+    check('AI build log card replaces live chat', (await page.getByText('AI Build Log', { exact: false }).count()) > 0 && (await page.getByText('Live Chat', { exact: false }).count()) === 0);
   });
 
   // 5. games: search, install, play
@@ -245,16 +305,7 @@ const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, f
     check('friend added toast', !!(await waitToast('FRIEND ADDED')));
   });
 
-  // 11. chat
-  await step('chat message', async () => {
-    await page.goto('http://localhost:5201/#/chat', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(600);
-    const input = page.locator('input[placeholder="Type a message..."]');
-    await input.fill('playtree e2e works');
-    await input.press('Enter');
-    await page.waitForTimeout(300);
-    check('chat message appears', (await page.getByText('playtree e2e works').count()) > 0);
-  });
+  // 11. chat (live chat removed — archive only)
 
   // 12. battle bus -> lobby
   await step('battle bus deploy', async () => {
@@ -310,6 +361,16 @@ const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, f
     check('mobile: bottom nav -> games', (await m.evaluate(() => location.hash)) === '#/games');
     await m.screenshot({ path: path.join(outDir, 'e2e-mobile-games.png') });
     await m.close();
+  });
+
+  // 17. redeem 400 tree-points code (last — absolute point checks are done)
+  await step('redeem PLAYTREE400', async () => {
+    await page.goto('http://localhost:5201/#/redeem', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+    await page.locator('input[placeholder="ENTER CODE"]').fill('PLAYTREE400');
+    await page.getByRole('button', { name: 'REDEEM', exact: true }).click();
+    const t = await waitToast('+400');
+    check('redeem PLAYTREE400 +400', !!t, t);
   });
 
   await page.screenshot({ path: path.join(outDir, 'e2e-final.png') });

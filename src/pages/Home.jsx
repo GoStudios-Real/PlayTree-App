@@ -91,8 +91,40 @@ export function Home() {
   const nav = useNavigate();
   const { state, update, notify, addPoints, allGames } = useApp();
   const [playing, setPlaying] = useState(null);
+  const [mainLoading, setMainLoading] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
   const games = allGames();
   const hero = DEFAULT_GAMES[0];
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // storm ticker: event countdown that stops at zero
+  const target = new Date('2026-10-31T19:00:00').getTime();
+  const diff = Math.max(0, target - now);
+  const tickerLive = diff === 0;
+  const cd = [Math.floor(diff / 86400000), Math.floor(diff / 3600000) % 24, Math.floor(diff / 60000) % 60, Math.floor(diff / 1000) % 60];
+  const cdLabels = ['DAYS', 'HRS', 'MIN', 'SEC'];
+
+  const platformChips = useMemo(() => {
+    const ua = navigator.userAgent;
+    const out = [];
+    if (/Windows/i.test(ua)) out.push(['Windows', '🖥️']);
+    else if (/Android/i.test(ua)) out.push(['Android', '🤖']);
+    else if (/iPhone|iPad|iPod/i.test(ua)) out.push(['iOS', '📱']);
+    else if (/Mac OS X/i.test(ua)) out.push(['macOS', '💻']);
+    else if (/Linux/i.test(ua)) out.push(['Linux', '🐧']);
+    out.push(['Browser', '🌐']);
+    return out;
+  }, []);
+
+  const launchMain = () => {
+    if (mainLoading) return;
+    setMainLoading(true);
+    setTimeout(() => { setMainLoading(false); setPlaying(hero); }, 1400);
+  };
 
   const news = [
     { t: 'SEASON 2 IS LIVE', d: 'THE VOID AWAKENS — new drop zones, new battle pass and the Root Ancient boss raid.', c: '#39ff14' },
@@ -137,11 +169,38 @@ export function Home() {
           <span className="brand-chip"><TreeLogo size={20} /></span>
           <span className="name">PlayTree</span>
         </div>
-        <div className="row" style={{ gap: 10 }}>
+        <div className="row wrap" style={{ gap: 10 }}>
+          <span className="mono-label" style={{ color: 'var(--accent)' }}>WELCOME BACK, {(state.player?.username || 'PLAYER').toUpperCase()}!</span>
+          {platformChips.map(([label, ic]) => (
+            <span key={label} className="pill" style={{ padding: '2px 8px', fontSize: '0.62rem', letterSpacing: 1 }} title={`Playing on ${label}`}>{ic} {label.toUpperCase()}</span>
+          ))}
           <span className="mono-label">{state.points} TREE-POINTS</span>
           <span className="mono-label">LVL {Math.floor(state.xp / 100) + 1}</span>
         </div>
       </div>
+
+      {/* storm ticker — countdown stops at zero */}
+      <section className="panel" style={{ marginBottom: 24, borderColor: tickerLive ? 'rgba(57,255,20,0.5)' : 'rgba(255,214,10,0.35)' }}>
+        <div className="row between wrap" style={{ gap: 12 }}>
+          <div className="row" style={{ gap: 12 }}>
+            <span style={{ fontSize: '1.6rem' }}>⚡</span>
+            <div>
+              <div className="kicker">STORM TICKER — HALLOWEEN HAUNT</div>
+              <div className="mono-label">{tickerLive ? 'EVENT IS LIVE — COUNTDOWN STOPPED' : 'EVENT STARTS IN'}</div>
+            </div>
+          </div>
+          <div className="row" style={{ gap: 8 }}>
+            {tickerLive
+              ? <span className="tag" style={{ background: 'var(--accent)', color: '#04120a' }}>LIVE NOW</span>
+              : cd.map((v, i) => (
+                <span key={cdLabels[i]} className="pill" style={{ minWidth: 62, textAlign: 'center', borderColor: 'rgba(255,214,10,0.4)' }}>
+                  <b style={{ fontSize: '1.05rem' }}>{String(v).padStart(2, '0')}</b>
+                  <span className="mono-label" style={{ display: 'block', fontSize: '0.5rem' }}>{cdLabels[i]}</span>
+                </span>
+              ))}
+          </div>
+        </div>
+      </section>
 
       {/* hero */}
       <section className="featured" style={{ marginBottom: 24 }}>
@@ -152,7 +211,7 @@ export function Home() {
             {SEASON.chapter} · {SEASON.season} · {SEASON.name}
           </div>
           <div className="row wrap" style={{ marginTop: 18 }}>
-            <button className="btn primary" onClick={() => setPlaying(hero)}><Icon name="play" size={13} /> PLAY MAIN GAME</button>
+            <button className="btn primary" onClick={launchMain}><Icon name="play" size={13} /> PLAY MAIN GAME</button>
             <button className="btn" style={{ borderColor: 'rgba(0,191,255,0.5)', color: 'var(--cyan)' }} onClick={() => nav('/games')}>BROWSE GAMES</button>
             <button className="btn ghost" onClick={() => nav('/lobby')}>SQUAD UP</button>
           </div>
@@ -255,7 +314,21 @@ export function Home() {
         <div className="mono-label">© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
       </div>
 
+      {mainLoading && <LoadingOverlay title="MAIN GAME" />}
       {playing && <GameModal game={playing} onClose={() => setPlaying(null)} />}
+    </div>
+  );
+}
+
+/* ---------------- spinning logo loading screen ---------------- */
+export function LoadingOverlay({ title }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 2600, background: 'radial-gradient(ellipse at center, #05210f, #010604)', display: 'grid', placeItems: 'center' }}>
+      <div className="center">
+        <div style={{ animation: 'pt-spin 1s linear infinite', display: 'inline-block' }}><TreeLogo size={64} /></div>
+        <div className="font-head" style={{ letterSpacing: 4, marginTop: 18, fontSize: '1.2rem' }}>LOADING {String(title || 'PLAYTREE').toUpperCase()}…</div>
+        <div className="mono-label" style={{ marginTop: 6 }}>SPINNING UP PLAYTREE…</div>
+      </div>
     </div>
   );
 }
@@ -263,11 +336,18 @@ export function Home() {
 /* ---------------- shared game card ---------------- */
 export function GameCard({ g, onPlay }) {
   const { state, toggleLike, toggleInstall, notify } = useApp();
+  const [loading, setLoading] = useState(false);
   const liked = state.liked.includes(g.id);
   const installed = state.installed.includes(g.id);
+  const play = () => {
+    if (loading) return;
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onPlay(); }, 1200);
+  };
   return (
     <div className="gcard">
-      <div className="gcard-art" style={{ background: `radial-gradient(circle at 50% 40%, ${g.art?.c1 || '#123'}, ${g.art?.c2 || '#05070a'})` }} onClick={onPlay}>
+      {loading && <LoadingOverlay title={g.title} />}
+      <div className="gcard-art" style={{ background: `radial-gradient(circle at 50% 40%, ${g.art?.c1 || '#123'}, ${g.art?.c2 || '#05070a'})` }} onClick={play}>
         <span>{g.art?.icon || '🎮'}</span>
         <span className="gcard-age">{g.age || 'All ages'}</span>
         <span className="gcard-badge">{g.genre || 'ACTION'}</span>
@@ -283,7 +363,7 @@ export function GameCard({ g, onPlay }) {
           </button>
         </div>
         <div className="gcard-actions">
-          <button className="btn primary" onClick={onPlay}><Icon name="play" size={11} /> PLAY</button>
+          <button className="btn primary" onClick={play}><Icon name="play" size={11} /> PLAY</button>
           <button className="btn" onClick={() => { toggleInstall(g.id); notify(installed ? 'REMOVED' : 'INSTALLED'); }}>
             <Icon name="download" size={11} /> {installed ? 'ADDED' : 'INSTALL'}
           </button>
