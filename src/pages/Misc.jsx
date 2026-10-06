@@ -297,7 +297,7 @@ export function Collaborations() {
         ))}
       </div>
 
-      <div className="center mono-label" style={{ marginTop: 30 }}>© 2026 PLAYTREE · GOSTUDIOS — ALL RIGHTS RESERVED</div>
+      <div className="center mono-label" style={{ marginTop: 30 }}>© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
     </Page>
   );
 }
@@ -708,6 +708,7 @@ export function Legal({ kind }) {
     ['Accepting these Terms', 'By creating a PlayTree account or playing any PlayTree game you agree to these terms. If you are under 18 you confirm a parent or guardian has read them with you.'],
     ['Your Account', 'One player name per account. Keep your parent PIN and sign-in details secret. You are responsible for anything that happens on your account.'],
     ['Content You Create', 'Studio games, clips, screenshots and group posts you publish belong to you, but you grant PlayTree a licence to host, show and promote them inside the service.'],
+    ['Intellectual Property', 'PlayTree™, the PlayTree logo and app icons are trademarks of GoStudios. The app, its code, art, audio and design are protected by copyright. © 2026 GoStudios, all rights reserved — see LICENSE and TRADEMARKS.md for what you may and may not do.'],
     ['Fair Play', 'Cheating, hacking, exploiting bugs for gain and harassment are not allowed. GoAI may warn, timeout, suspend or ban accounts that break these rules.'],
     ['Purchases & Tree-Points', 'Tree-Points are a virtual balance with no cash value and cannot be exchanged for money. Cosmetic items are licensed to you, not sold.'],
     ['Ending Access', 'We may suspend or close accounts that seriously or repeatedly break these terms, with notice where it is safe to give it.'],
@@ -736,7 +737,7 @@ export function Legal({ kind }) {
           </div>
         ))}
       </div>
-      <div className="center mono-label" style={{ marginTop: 26 }}>© 2026 PLAYTREE · GOSTUDIOS — ALL RIGHTS RESERVED</div>
+      <div className="center mono-label" style={{ marginTop: 26 }}>© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
     </Page>
   );
 }

@@ -1,4 +1,4 @@
-# PlayTree
+# PlayTree™
 
 **The PlayTree gaming universe — one app for your profile, games, locker, store, and community.**
 
@@ -41,7 +41,10 @@ Grab the latest build from the [Releases page](../../releases):
 | `PlayTree-Setup-1.0.0.exe` | Windows 10/11 | NSIS installer (Start Menu + Desktop shortcut) |
 | `PlayTree-Portable-1.0.0.exe` | Windows 10/11 | Single-file portable app |
 
-> The Windows EXE is unsigned, so SmartScreen may warn on first run — choose *More info → Run anyway*.
+> All four artifacts are digitally signed by GoStudios. The Android APK uses
+> the release keystore; the Windows EXEs carry an Authenticode signature from
+> the GoStudios certificate. Because that certificate is not issued by a public
+> CA, SmartScreen may still warn on first run — choose *More info → Run anyway*.
 
 ## Quick start (web)
 
@@ -87,7 +90,11 @@ gradlew.bat assembleRelease
 npm run dist:win          # → release/PlayTree Setup 1.0.0.exe + PlayTree 1.0.0.exe
 ```
 
-Electron loads `dist/index.html` directly; packaging config is the `build` field in `package.json`.
+Electron loads `dist/index.html` directly; packaging config is the `build` field
+in `package.json`. `dist:win` runs `scripts/dist-win.cjs`, which loads the
+Authenticode certificate path and password from `build/keystore.properties`
+(gitignored) and passes them to electron-builder as `CSC_LINK` /
+`CSC_KEY_PASSWORD`, so no secrets live in the public repo.
 
 ## Project layout
 
@@ -116,6 +123,14 @@ build/               icons (svg/png/ico)
 
 React 18 · Vite 5 · React Router 6 · Capacitor 6 · Electron 33 · electron-builder 25
 
-## License
+## License, copyright & trademark
 
-UNLICENSED — © GoStudios. All rights reserved.
+- **License:** proprietary — see [LICENSE](LICENSE). Personal, non-commercial
+  use only; no redistribution. `package.json` declares `UNLICENSED`.
+- **Copyright:** © 2026 GoStudios. All rights reserved. Copyright notices also
+  ship inside the app footer and the in-app Terms / Privacy pages.
+- **Trademark:** PlayTree™, the PlayTree logo and app icons are trademarks of
+  GoStudios — see [TRADEMARKS.md](TRADEMARKS.md) for usage guidelines.
+- **Signing:** APKs are signed with the GoStudios release keystore; Windows
+  EXEs are Authenticode-signed during `npm run dist:win` (credentials stay in
+  gitignored `build/keystore.properties`).

@@ -132,7 +132,7 @@ export function Profile() {
         </div>
       </section>
 
-      <div className="center mono-label">© 2026 PLAYTREE · GOSTUDIOS — ALL RIGHTS RESERVED</div>
+      <div className="center mono-label">© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
     </Page>
   );
 }
@@ -250,7 +250,7 @@ export function Store() {
         </section>
       ))}
 
-      <div className="center mono-label">© 2026 PLAYTREE · GOSTUDIOS — ALL RIGHTS RESERVED</div>
+      <div className="center mono-label">© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
     </Page>
   );
 }

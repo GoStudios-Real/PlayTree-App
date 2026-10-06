@@ -252,7 +252,7 @@ export function Home() {
       </section>
 
       <div className="center" style={{ marginTop: 34 }}>
-        <div className="mono-label">© 2026 PLAYTREE · GOSTUDIOS — ALL RIGHTS RESERVED</div>
+        <div className="mono-label">© 2026 PLAYTREE™ · GOSTUDIOS — ALL RIGHTS RESERVED</div>
       </div>
 
       {playing && <GameModal game={playing} onClose={() => setPlaying(null)} />}

@@ -9,5 +9,7 @@ android/.gradle/
 android/local.properties
 build/keystore.properties
 build/*.keystore
+build/*.pfx
+build/*.cer
 *.log
 .DS_Store
