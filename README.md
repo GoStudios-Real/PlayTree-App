@@ -152,3 +152,11 @@ React 18 · Vite 5 · React Router 6 · Capacitor 6 · Electron 33 · electron-b
 - **Signing:** APKs are signed with the GoStudios release keystore; Windows
   EXEs are Authenticode-signed during `npm run dist:win` (credentials stay in
   gitignored `build/keystore.properties`).
+
+
+---
+
+## OpenCode
+
+This repository is maintained with [OpenCode](https://opencode.ai).
+Hub: https://gostudios-real.github.io/
